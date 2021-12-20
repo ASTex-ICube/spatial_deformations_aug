@@ -9,9 +9,9 @@ In progress.
 ## Requirements
 
 * Python >= 3.7
-* Python packages : numpy, Pillow, skimage
-* Tensorflow 2
-* Tensorflow addons : tfa.image
+* NumPy, Pillow, scikit-image
+* TensorFlow 2
+* TensorFlow Addons Image module
 * Pytorch
 
 ## How to use
