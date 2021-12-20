@@ -1,4 +1,4 @@
-# Data augmentation based on spatial deformations
+# Data augmentation based on random spatial deformations
 
 Authors: F. Allender, R. [Allègre](https://igg.icube.unistra.fr/index.php/R%C3%A9mi_All%C3%A8gre), C. [Wemmert](https://wemmertc.github.io/webpage/), J.-M. [Dischler](https://dpt-info.di.unistra.fr/~dischler).
 

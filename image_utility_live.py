@@ -1,5 +1,5 @@
 '''
- * Data augmentation based on spatial deformations
+ * Data augmentation based on random spatial deformations
  * Authors: F. Allender, R. Allègre, C. Wemmert, J.-M. Dischler
  *
  * Code author: Florian Allender
