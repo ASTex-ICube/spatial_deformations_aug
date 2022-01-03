@@ -222,15 +222,7 @@ def apply_deformation(deformation, sub_dir, subset, N, height, width, params=Non
 	image_dir = '../Data/' + sub_dir + '/%s/images' % subset
 	gt_dir    = '../Data/' + sub_dir + '/%s/gts' % subset
 
-	if deformation == 'fbm':
-		fbm(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-	elif deformation == 'elt':
-		elt(image_dir, gt_dir, N, save_dir, subset, 3, params[0], params[1], height, width)
-	elif deformation == 'tps':
-		elt(image_dir, gt_dir, N, save_dir, subset, 2, params[0], params[1], height, width)
-	elif deformation == 'sim':
-		sim(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-	elif deformation == 'mls':
+	if deformation == 'mls':
 		nuclei_results = '../Data/' + sub_dir + '/nuclei_segmentation_results'
 		mls(image_dir, gt_dir, nuclei_results, N, params[0], params[1], save_dir, subset)
 	else:
@@ -240,8 +232,7 @@ height = 256
 width  = 256
 essais = 10
 
-param_n = [3, 5, 10]
-param_sigma = [5, 10, 20, 50]
+param_sigma = [5, 10, 15, 30, 100]
 
 sub_dir = 'patches_cropped_20'
 
