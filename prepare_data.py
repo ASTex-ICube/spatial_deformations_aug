@@ -725,7 +725,38 @@ param_sigma = [5, 10, 20, 50]
 param_alpha = [50, 100, 200, 400]
 param_sigma2 = [5, 10, 20]
 
-start = time.time()
-apply_deformation('fbm', save_dir, 'train', essais, height, width, [0.35, 1])
-end = time.time()
-print("Dataset warping time:", '{:.4f} s'.format(end-start))
+
+
+print("augment elt")
+for n in param_n:
+	for sigma in param_sigma:
+		start = time.time()
+		apply_deformation('elt', save_dir, 'train', essais, height, width, [n, sigma])
+		end = time.time()
+		print("Dataset warping time:", '{:.4f} s'.format(end-start))
+
+
+print("augment tps")
+for n in param_n:
+	for sigma in param_sigma:
+		start = time.time()
+		apply_deformation('tps', save_dir, 'train', essais, height, width, [n, sigma])
+		end = time.time()
+		print("Dataset warping time:", '{:.4f} s'.format(end-start))
+
+
+print("augment sim")
+for alpha in param_alpha:
+	for sigma in param_sigma2:
+		start = time.time()
+		apply_deformation('sim', save_dir, 'train', essais, height, width, [alpha, sigma])
+		end = time.time()
+		print("Dataset warping time:", '{:.4f} s'.format(end-start))
+
+print("augment fbm")
+for w in param_w:
+	for s in param_s:
+		start = time.time()
+		apply_deformation('fbm', save_dir, 'train', essais, height, width, [w, s])
+		end = time.time()
+		print("Dataset warping time:", '{:.4f} s'.format(end-start))
