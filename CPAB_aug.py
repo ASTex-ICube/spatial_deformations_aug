@@ -127,9 +127,9 @@ height = 256
 width  = 256
 essais = 10
 
-param_n = [15] #[3, 5, 10]
+param_n = [3, 5, 10, 15]
 
-param_var = [0.5, 1] #[0.5, 1, 2, 5, 10]
+param_var = [0.5, 1, 2, 5, 10]
 
 sub_dir = 'patches_cropped_20'
 
