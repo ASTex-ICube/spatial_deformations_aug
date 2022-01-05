@@ -4,7 +4,11 @@ Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender),
 
 ## Deformation models
 
-In progress.
+* Random Displacement Fields, [Simmard et al., 2003](https://ieeexplore.ieee.org/document/1227801)
+* Grid-Based, [Ronneberger et al., 2015](https://arxiv.org/abs/1505.04597)
+* Moving Least Square, [Schaefer et al., 2006](https://dl.acm.org/doi/10.1145/1141911.1141920)
+* Continuous Piecewise-Affine velocity fields Based, [Freifeld et al., 2017](https://backend.orbit.dtu.dk/ws/portalfiles/portal/139267800/07814343.pdf)
+* Fractal Brownian Motion with Perlin Noise [Perlin, 1985](https://dl.acm.org/doi/10.1145/325334.325247)
 
 ## Requirements
 
