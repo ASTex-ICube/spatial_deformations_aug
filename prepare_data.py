@@ -612,7 +612,16 @@ def nuclei(file_dir, mask_dir, nuclei_results, essais, save_dir, subset, alpha, 
 
 def sim(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, width):
 
+	"""Elastic deformation of images as described in [Simard2003]_.
+    .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
+       Convolutional Neural Networks applied to Visual Document Analysis", in
+       Proc. of the International Conference on Document Analysis and
+       Recognition, 2003.
+    """
+
+
 	ext = '_%.3f_%.3f' % (alpha, sigma)
+	pad_size=128
 
 	if not os.path.exists('../Data/%s/%s/images/' % (save_dir+ext, subset)):
 		os.makedirs('../Data/%s/%s/images/' % (save_dir+ext, subset))
@@ -625,73 +634,49 @@ def sim(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, widt
 	for f in range(len(file_names)):
 
 		print("sim ", f+1, "/", len(file_names))
+		with tf.device('GPU:0'):
 
-		file_name = file_names[f]
-		file_name_noext = os.path.splitext(file_name)[0].split('/')[-1]
-                
-		input_image = PIL.Image.open(file_name).convert('RGB')
-		input_image = np.asarray(input_image)
-		input_image = img_as_float(input_image)
-        
-		mask_name = mask_names[f]
-		mask_name_noext = os.path.splitext(mask_name)[0].split('/')[-1]
-		input_mask = io.imread(mask_name, as_gray=True)
-		input_mask = img_as_float(input_mask)
+			img, file_name_noext = read_image(file_names[f], 3)
+			gt, gt_name_noext = read_image(mask_names[f], 1)
 
-		for i in range(essais):
+			n = tf.shape(img)[1]
 
-			img_result, msk_result = transform(input_image, input_mask, sigma=sigma, alpha=alpha)
-			img_result = img_as_ubyte(img_result)
-			msk_result[msk_result > 0.0] = 1.0
-			msk_result = img_as_ubyte(msk_result)
+			for e in range(essais):
 
-			io.imsave('../Data/'+save_dir+ext+'/'+subset+'/images/'+file_name_noext+'_'+str(i)+'.png', img_result)
-			io.imsave('../Data/'+save_dir+ext+'/'+subset+'/gts/'+mask_name_noext+'_'+str(i)+'.png', msk_result, check_contrast=False)
+				radius = 4*sigma + 0.5
+				fs = 2*int(radius)+1
 
+				displacement = tf.random.uniform([n, n, 2], -1, 1, dtype=tf.float32)
+				displacement = tfa.image.gaussian_filter2d(displacement, filter_shape=fs, sigma=sigma, padding='REFLECT') * alpha
+		
+				x = tf.linspace(0.0, height * 1.0 -1, n)
+				y = tf.linspace(0.0, width * 1.0 -1, n)
+				X, Y = tf.meshgrid(x, y)
 
-def transform(image, mask, sigma=10, alpha=100, seed=None):
+				source = tf.stack([Y, X], axis=2)
+				#source = tf.reshape(source, [n*n, 2])
+				dest = tf.add(source, displacement)
 
-    if seed is None:
-        seed = int(time.time())
+				dest = tf.expand_dims(dest, axis=0)
+				displacement = tf.expand_dims(displacement, axis=0)
 
-    if len(mask.shape) == 2:
-        mask = mask[:, :, np.newaxis]
+				# Warp image
+				# https://www.tensorflow.org/addons/api_docs/python/tfa/image/dense_image_warp
+				dense_img_warp = tfa.image.dense_image_warp(img, displacement)
+				dense_gt_warp = tfa.image.dense_image_warp(gt, displacement)
 
-    if mask.shape[2] > 1:
-        raise Exception('Mask must only have one channel')
+				# Remove batch dimension
+				dense_img_warp = tf.squeeze(dense_img_warp, 0)
+				dense_gt_warp = tf.squeeze(dense_gt_warp, 0)
 
-    img_result = simard(image, alpha=alpha, sigma=sigma, random_state=seed)
-    msk_result = simard(mask, alpha=alpha, sigma=sigma, random_state=seed)
+				# Write images
+				dense_img_warp = tf.image.convert_image_dtype(dense_img_warp, dtype=tf.uint8)
+				dense_img_warp_png = tf.io.encode_png(dense_img_warp)
+				tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/images/'+file_name_noext+'_'+str(e)+'.png', dense_img_warp_png)
 
-    return img_result, msk_result
-
-def simard(image, alpha, sigma, random_state=None):
-    """Elastic deformation of images as described in [Simard2003]_.
-    .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
-       Convolutional Neural Networks applied to Visual Document Analysis", in
-       Proc. of the International Conference on Document Analysis and
-       Recognition, 2003.
-    """
-	# Thomas Lampert 23/11/17
-
-    shape = image.shape[:2]
-
-    dx = gaussian_filter((np.random.rand(*shape) * 2 - 1), sigma) * alpha
-    dy = gaussian_filter((np.random.rand(*shape) * 2 - 1), sigma) * alpha
-
-    x, y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
-    indices = np.reshape(x+dx, (-1, 1)), np.reshape(y+dy, (-1, 1))
-
-    if len(image.shape) > 2:
-        # Image is RGB
-        distorted = np.empty(image.shape, dtype=image.dtype)
-        for i in range(image.shape[2]):
-            distorted[:, :, i] = map_coordinates(image[:, :, i], indices, order=1, mode='reflect').reshape(shape)
-    else:
-        # Image is greyscale
-        distorted = map_coordinates(image, indices, order=1, mode='reflect').reshape(shape)
-
-    return distorted
+				dense_gt_warp = tf.image.convert_image_dtype(dense_gt_warp, dtype=tf.uint8)
+				dense_gt_warp_png = tf.io.encode_png(dense_gt_warp)
+				tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(e)+'.png', dense_gt_warp_png)
 
   
 # PARAMS
