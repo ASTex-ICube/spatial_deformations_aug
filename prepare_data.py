@@ -589,17 +589,63 @@ N_test  = 50
 N_train = 20 # 10, 20, 100, 300, 600
 N_val   = 10 # 5, 10, 30, 100, 200 
 
-#orig_dir = 'selected_patches'
 orig_dir = 'patches'
+
+## Original tree of our data :
+# Data
+# ├── patches
+# │   ├── test
+# │   │   ├── gts
+# │   │   │   ├── background
+# │   │   │   ├── glomeruli
+# │   │   │   └── negative
+# │   │   └── images
+# │   │       ├── background
+# │   │       ├── glomeruli
+# │   │       └── negative
+# │   ├── train
+# │   │   ├── gts
+# │   │   │   ├── background
+# │   │   │   ├── glomeruli
+# │   │   │   └── negative
+# │   │   └── images
+# │   │       ├── background
+# │   │       ├── glomeruli
+# │   │       └── negative
+# │   └── validation
+# │       ├── gts
+# │       │   ├── background
+# │       │   ├── glomeruli
+# │       │   └── negative
+# │       └── images
+# │           ├── background
+# │           ├── glomeruli
+# │           └── negative
+
+
+# prepare_crop select the number of images according to the given parameters in each folder,
+# then performs 5 croppings. The resulting tree looks like this :
+# Data
+# ├── patches_cropped_N_train
+# │   ├── test
+# │   │   ├── gts
+# │   │   └── images
+# │   ├── train
+# │   │   ├── gts
+# │   │   └── images
+# │   └── validation
+# │       ├── gts
+# │       └── images
 
 print("prepare crop")
 save_dir = prepare_crop([N_train, N_val, N_test], ['train', 'validation', 'test'], orig_dir, height, width)
-#save_dir = prepare_crop([N_train, N_val], ['train', 'validation'], orig_dir, height, width)
 #save_dir = 'patches_cropped_20'
 
-essais = 10
+# prepare_crop can be skipped if save_dir is provided. Comment/Uncomment according to user's needs.
 
-# Grid Search
+essais = 10 # number of deformations for each patch.
+
+# Grid Search. Change values according to user's needs.
 param_w = [0.1, 0.35, 0.7, 1]
 param_s = [1, 2, 4]
 
@@ -609,7 +655,7 @@ param_sigma = [5, 10, 20, 50]
 param_alpha = [50, 100, 200, 400]
 param_sigma2 = [5, 10, 20]
 
-
+# Performs all deformation with the parameters given above. Comment/Uncomment according to user's needs.
 
 print("augment gdb3")
 for n in param_n:
