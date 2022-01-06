@@ -585,9 +585,7 @@ def rdf(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, widt
 height = 256
 width  = 256
 
-N_test  = 50
-
-# 1er sous ensemble                                                     
+N_test  = 50                                                    
 N_train = 20 # 10, 20, 100, 300, 600
 N_val   = 10 # 5, 10, 30, 100, 200 
 
@@ -595,9 +593,9 @@ N_val   = 10 # 5, 10, 30, 100, 200
 orig_dir = 'patches'
 
 print("prepare crop")
-#save_dir = prepare_crop([N_train, N_val, N_test], ['train', 'validation', 'test'], orig_dir, height, width)
+save_dir = prepare_crop([N_train, N_val, N_test], ['train', 'validation', 'test'], orig_dir, height, width)
 #save_dir = prepare_crop([N_train, N_val], ['train', 'validation'], orig_dir, height, width)
-save_dir = 'patches_cropped_20'
+#save_dir = 'patches_cropped_20'
 
 essais = 10
 
