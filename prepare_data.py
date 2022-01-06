@@ -140,17 +140,14 @@ def apply_deformation(deformation, sub_dir, subset, N, height, width, params=Non
 
     if deformation == 'fbm':
         fbm(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-    elif deformation == 'elt':
-        elt(image_dir, gt_dir, N, save_dir, subset, 3, params[0], params[1], height, width)
-    elif deformation == 'tps':
-        elt(image_dir, gt_dir, N, save_dir, subset, 2, params[0], params[1], height, width)
-    elif deformation == 'sim':
-        sim(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-    elif deformation == 'nuclei':
-        nuclei_results = '../Data/' + sub_dir + '/nuclei_segmentation_results'
-        nuclei(image_dir, gt_dir, nuclei_results, N, save_dir, subset, params[0], params[1], height, width)
-	elif deformation == 'foldover':
-		foldover(image_dir, gt_dir, N, save_dir, subset, height, width)
+    elif deformation == 'gdb3':
+        gdb(image_dir, gt_dir, N, save_dir, subset, 3, params[0], params[1], height, width)
+    elif deformation == 'gdb2':
+        gdb(image_dir, gt_dir, N, save_dir, subset, 2, params[0], params[1], height, width)
+    elif deformation == 'rdf':
+        rdf(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
+    elif deformation == 'foldover':
+        foldover(image_dir, gt_dir, N, save_dir, subset, height, width)
     else:
         print('Deformation not known or implemented yet.')
 
@@ -321,7 +318,7 @@ def fbm(file_dir, mask_dir, essais, save_dir, subset, w, s, height, width):
 			dense_gt_warp_png = tf.io.encode_png(dense_gt_warp)
 			tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(n)+'.png', dense_gt_warp_png)
 
-def elt(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, width):
+def gdb(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, width):
 
 	ext = '_%.3f_%.3f' % (n, sigma)
 
@@ -337,7 +334,7 @@ def elt(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, w
 
 	for f in range(len(file_names)):
 
-		print("elt ", f+1, "/", len(file_names))
+		print("gdb ", f+1, "/", len(file_names))
 
 		with tf.device('GPU:0'):
 
@@ -411,7 +408,7 @@ def foldover(file_dir, mask_dir, essais, save_dir, subset, height, width):
 
 	for f in range(len(file_names)):
 
-		print("elt ", f+1, "/", len(file_names))
+		print("gdb ", f+1, "/", len(file_names))
 
 		with tf.device('GPU:0'):
 
@@ -514,103 +511,7 @@ def foldover_calc(source, displacement, height, width, pad_size):
 	return foldover
 
 
-
-def nuclei(file_dir, mask_dir, nuclei_results, essais, save_dir, subset, alpha, sigma, height, width):
-
-	pad_size = 128
-
-	ext = '_%.3f_%.3f' % (n, sigma)
-      
-	file_names = fetch_file_names(file_dir)
-	mask_names = fetch_file_names(mask_dir)
-
-	if not os.path.exists('../Data/%s/%s/images/' % (save_dir+ext, subset)):
-		os.makedirs('../Data/%s/%s/images/' % (save_dir+ext, subset))
-	if not os.path.exists('../Data/%s/%s/gts/' % (save_dir+ext, subset)):
-		os.makedirs('../Data/%s/%s/gts/' % (save_dir+ext, subset))
-
-	for f in range(len(file_names)):
-
-		print("nuclei ", f, "/", len(file_names))
-
-		file_name = file_names[f]
-		file_name_noext = os.path.splitext(file_name)[0].split('/')[-1]
-
-		mask_name = mask_names[f]
-		mask_name_noext = os.path.splitext(mask_name)[0].split('/')[-1]
-
-		file_name_nuclei_centers = nuclei_results + '/' + file_name_noext + '_nuclei_centers.txt'
-	
-		# Load nuclei centers
-		center_array_np = np.loadtxt(file_name_nuclei_centers, dtype=int)
-		center_array_np = center_array_np[:, [1, 0]] + np.random.random((center_array_np.shape[0], 2)) * 0.001
-		center_array_np += pad_size
-		center_array = tf.convert_to_tensor(center_array_np, dtype=tf.float32)
-		center_array = tf.expand_dims(center_array, axis=0)
-		
-		#print("Center array shape:", center_array.shape)
-		#print("Center array device:", center_array.device)
-		
-		# Read image
-
-		img, file_name_noext = read_image(file_names[f], 3)
-		gt, gt_name_noext = read_image(mask_names[f], 1)
-
-		# Add padding
-		paddings = tf.constant([[pad_size, pad_size], [pad_size, pad_size], [0, 0]])
-		img = tf.pad(img[0,:,:,:], paddings, "REFLECT")
-		gt = tf.pad(gt[0,:,:,:], paddings, "REFLECT")
-
-		for e in range(essais):
-		
-			displacement = tf.random.normal([n*n, 2], 0.0, sigma, dtype=tf.float32)
-			displacement = tf.expand_dims(displacement, axis=0)
-			
-			x = tf.linspace(0.0 + pad_size, height * 1.0 + pad_size, n)
-			y = tf.linspace(0.0 + pad_size, width * 1.0 + pad_size, n)
-
-			X, Y = tf.meshgrid(x, y)
-			source = tf.stack([Y, X], axis=2)
-			source = tf.reshape(source, [n*n, 2])
-			source = tf.expand_dims(source, axis=0)
-
-			#print("Source shape:", source.shape)
-			#print("Displacement shape:", displacement.shape)
-			
-			# Apply spline interpolation to compute displacements for nuclei centers
-			center_array_displacement = tfa.image.interpolate_spline(source, displacement,
-																	center_array, order=3)
-			
-			dest = tf.add(center_array, center_array_displacement)
-
-			# Warp image
-			# https://www.tensorflow.org/addons/api_docs/python/tfa/image/sparse_image_warp
-			dense_img_warp, flow_field = tfa.image.sparse_image_warp(img, center_array, dest,
-																	num_boundary_points=0,
-																	interpolation_order=3)
-			dense_gt_warp, flow_field = tfa.image.sparse_image_warp(gt, center_array, dest,
-																	num_boundary_points=0,
-																	interpolation_order=3)
-
-		
-			# Remove padding
-			dense_img_warp = tf.image.crop_to_bounding_box(dense_img_warp, pad_size, pad_size, height, width)
-			dense_gt_warp = tf.image.crop_to_bounding_box(dense_gt_warp, pad_size, pad_size, height, width)
-
-			# Remove batch dimension
-			#dense_img_warp = tf.squeeze(dense_img_warp, 0)
-			#dense_gt_warp = tf.squeeze(dense_gt_warp, 0)
-
-			# Write images
-			dense_img_warp = tf.image.convert_image_dtype(dense_img_warp, dtype=tf.uint8)
-			dense_img_warp_png = tf.io.encode_png(dense_img_warp)
-			tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/images/'+file_name_noext+'_'+str(e)+'.png', dense_img_warp_png)
-
-			dense_gt_warp = tf.image.convert_image_dtype(dense_gt_warp, dtype=tf.uint8)
-			dense_gt_warp_png = tf.io.encode_png(dense_gt_warp)
-			tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(e)+'.png', dense_gt_warp_png)
-
-def sim(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, width):
+def rdf(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, width):
 
 	"""Elastic deformation of images as described in [Simard2003]_.
     .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
@@ -712,29 +613,29 @@ param_sigma2 = [5, 10, 20]
 
 
 
-print("augment elt")
+print("augment gdb3")
 for n in param_n:
 	for sigma in param_sigma:
 		start = time.time()
-		apply_deformation('elt', save_dir, 'train', essais, height, width, [n, sigma])
+		apply_deformation('gdb3', save_dir, 'train', essais, height, width, [n, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
 
-print("augment tps")
+print("augment gdb2")
 for n in param_n:
 	for sigma in param_sigma:
 		start = time.time()
-		apply_deformation('tps', save_dir, 'train', essais, height, width, [n, sigma])
+		apply_deformation('gdb2', save_dir, 'train', essais, height, width, [n, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
 
-print("augment sim")
+print("augment rdf")
 for alpha in param_alpha:
 	for sigma in param_sigma2:
 		start = time.time()
-		apply_deformation('sim', save_dir, 'train', essais, height, width, [alpha, sigma])
+		apply_deformation('rdf', save_dir, 'train', essais, height, width, [alpha, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
