@@ -25,8 +25,9 @@ Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender),
 
 ### Data preparation
 
-1. Provide CPAB_aug.py, MLS_aug.py and prepare_data.py with the adequate parameters (folders, image size, wanted deformations and parameter values, etc.).
-2. Call python3 CPAB_aug.py or python3 MLS_aug.py or python3 prepare_data.py.
+1. Provide CPAB_aug.py, CNB_aug.py and prepare_data.py with the adequate parameters (folders, image size, wanted deformations and parameter values, etc.).
+2. Call python3 nuclei_segmentation.py for automatic detection of nuclei centers (mandatory before using CNB_aug.py)
+3. Call python3 CPAB_aug.py or python3 CNB_aug.py or python3 prepare_data.py.
 
 ### Data segmentation
 
