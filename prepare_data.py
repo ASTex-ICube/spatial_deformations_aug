@@ -585,6 +585,8 @@ def rdf(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, widt
 height = 256
 width  = 256
 
+# Number of 512*512 glomeruli patches to select for each subset. 
+# To this number we add the same number of negative patches (see tree below). 
 N_test  = 50                                                    
 N_train = 20 # 10, 20, 100, 300, 600
 N_val   = 10 # 5, 10, 30, 100, 200 
