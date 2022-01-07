@@ -146,8 +146,11 @@ def apply_deformation(deformation, sub_dir, subset, N, height, width, params=Non
         gdb(image_dir, gt_dir, N, save_dir, subset, 2, params[0], params[1], height, width)
     elif deformation == 'rdf':
         rdf(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-    elif deformation == 'foldover':
-        foldover(image_dir, gt_dir, N, save_dir, subset, height, width)
+    elif deformation == 'cpab':
+        cpab(image_dir, gt_dir, N, save_dir, subset, params[0], params[1])
+    elif deformation == 'mls':
+        nuclei_results = '../Data/' + sub_dir + '/nuclei_segmentation_results'
+        mls(image_dir, gt_dir, nuclei_results, N, params[0], params[1], save_dir, subset)
     else:
         print('Deformation not known or implemented yet.')
 
@@ -225,7 +228,7 @@ def fbm(file_dir, mask_dir, essais, save_dir, subset, w, s, height, width):
 
 	ext = '_1T_%.3f_%.3f' % (w, s)
 
-	pad_size = 128
+	pad_size = int(max(width, height) / 2)
 
 	if not os.path.exists('../Data/%s/%s/images/' % (save_dir+ext, subset)):
 		os.makedirs('../Data/%s/%s/images/' % (save_dir+ext, subset))
@@ -322,7 +325,7 @@ def gdb(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, w
 
 	ext = '_%.3f_%.3f' % (n, sigma)
 
-	pad_size = 128
+	pad_size = int(max(width, height) / 2)
 
 	if not os.path.exists('../Data/%s/%s/images/' % (save_dir+ext, subset)):
 		os.makedirs('../Data/%s/%s/images/' % (save_dir+ext, subset))
@@ -389,14 +392,13 @@ def gdb(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, w
 				dense_gt_warp_png = tf.io.encode_png(dense_gt_warp)
 				tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(e)+'.png', dense_gt_warp_png)
 
-def foldover(file_dir, mask_dir, essais, save_dir, subset, height, width):
+def gdb3_no_foldover(file_dir, mask_dir, essais, save_dir, subset, height, width, rate, n=3, sigma=50):
+	
+	# This fonction operates the same as gdb, but discard the deformation fields with a foldover rate > rate
 
 	ext = ''
 
-	pad_size = 128
-
-	n=3
-	sigma=50
+	pad_size = int(max(width, height) / 2)
 
 	if not os.path.exists('../Data/%s/%s/images/' % (save_dir+ext, subset)):
 		os.makedirs('../Data/%s/%s/images/' % (save_dir+ext, subset))
@@ -439,7 +441,7 @@ def foldover(file_dir, mask_dir, essais, save_dir, subset, height, width):
 
 				fold = foldover_calc(source, displacement, height, width, pad_size)
 				print(fold)
-				if fold < 5:
+				if fold < rate:
 	
 					# Warp image
 					# https://www.tensorflow.org/addons/api_docs/python/tfa/image/sparse_image_warp
@@ -522,7 +524,7 @@ def rdf(file_dir, mask_dir, essais, save_dir, subset, alpha, sigma, height, widt
 
 
 	ext = '_%.3f_%.3f' % (alpha, sigma)
-	pad_size=128
+	pad_size = int(max(width, height) / 2)
 
 	if not os.path.exists('../Data/%s/%s/images/' % (save_dir+ext, subset)):
 		os.makedirs('../Data/%s/%s/images/' % (save_dir+ext, subset))
@@ -647,19 +649,12 @@ save_dir = prepare_crop([N_train, N_val, N_test], ['train', 'validation', 'test'
 
 essais = 10 # number of deformations for each patch.
 
-# Grid Search. Change values according to user's needs.
-param_w = [0.1, 0.35, 0.7, 1]
-param_s = [1, 2, 4]
-
-param_n = [3, 5, 10]
-param_sigma = [5, 10, 20, 50]
-
-param_alpha = [50, 100, 200, 400]
-param_sigma2 = [5, 10, 20]
-
 # Performs all deformation with the parameters given above. Comment/Uncomment according to user's needs.
 
 print("augment gdb3")
+# Grid Search. Change values according to user's needs.
+param_n = [3, 5, 10]
+param_sigma = [5, 10, 20, 50]
 for n in param_n:
 	for sigma in param_sigma:
 		start = time.time()
@@ -669,6 +664,9 @@ for n in param_n:
 
 
 print("augment gdb2")
+# Grid Search. Change values according to user's needs.
+param_n = [3, 5, 10]
+param_sigma = [5, 10, 20, 50]
 for n in param_n:
 	for sigma in param_sigma:
 		start = time.time()
@@ -678,6 +676,9 @@ for n in param_n:
 
 
 print("augment rdf")
+# Grid Search. Change values according to user's needs.
+param_alpha = [50, 100, 200, 400]
+param_sigma2 = [5, 10, 20]
 for alpha in param_alpha:
 	for sigma in param_sigma2:
 		start = time.time()
@@ -685,10 +686,37 @@ for alpha in param_alpha:
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
+		
 print("augment fbm")
+# Grid Search. Change values according to user's needs.
+param_w = [0.1, 0.35, 0.7, 1]
+param_s = [1, 2, 4]
 for w in param_w:
 	for s in param_s:
 		start = time.time()
 		apply_deformation('fbm', save_dir, 'train', essais, height, width, [w, s])
+		end = time.time()
+		print("Dataset warping time:", '{:.4f} s'.format(end-start))
+
+		
+print("augment cpab")		
+# Grid Search. Change values according to user's needs.
+param_n = [3, 5, 10, 15]
+param_var = [0.5, 1, 2, 5, 10]
+for n in param_n:
+        for var in param_var :
+                start = time.time()
+                apply_deformation('cpab', sub_dir, 'train', essais, height, width, [n, var])
+                end = time.time()
+                print("Dataset warping time:", '{:.4f} s'.format(end-start))
+
+		
+print("augment mls")
+# Grid Search. Change values according to user's needs.
+param_sigma = [5, 10, 15, 30, 100]
+for n in param_n:
+	for sigma in param_sigma:
+		start = time.time()
+		apply_deformation('mls', sub_dir, 'train', essais, height, width, [n, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
