@@ -216,30 +216,3 @@ def mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 			output_mask_ubyte = img_as_ubyte(output_mask)
 			io.imsave('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(i)+'.png', output_mask_ubyte, check_contrast=False)
 	
-def apply_deformation(deformation, sub_dir, subset, N, height, width, params=None, baseline=False):
-
-	save_dir = sub_dir + '/' + deformation
-	image_dir = '../Data/' + sub_dir + '/%s/images' % subset
-	gt_dir    = '../Data/' + sub_dir + '/%s/gts' % subset
-
-	if deformation == 'mls':
-		nuclei_results = '../Data/' + sub_dir + '/nuclei_segmentation_results'
-		mls(image_dir, gt_dir, nuclei_results, N, params[0], params[1], save_dir, subset)
-	else:
-		print('Deformation not known or implemented yet.')
-
-height = 256
-width  = 256
-essais = 10
-
-param_sigma = [5, 10, 15, 30, 100]
-
-sub_dir = 'patches_cropped_20'
-
-print("augment mls")
-for n in param_n:
-	for sigma in param_sigma:
-		start = time.time()
-		apply_deformation('mls', sub_dir, 'train', essais, height, width, [n, sigma])
-		end = time.time()
-		print("Dataset warping time:", '{:.4f} s'.format(end-start))
