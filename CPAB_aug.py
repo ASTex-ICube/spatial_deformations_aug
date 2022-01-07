@@ -106,19 +106,8 @@ def apply_deformation(deformation, sub_dir, subset, N, height, width, params=Non
 	save_dir = sub_dir + '/' + deformation
 	image_dir = '../Data/' + sub_dir + '/%s/images' % subset
 	gt_dir    = '../Data/' + sub_dir + '/%s/gts' % subset
-
-	if deformation == 'fbm':
-		fbm(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-	elif deformation == 'elt':
-		elt(image_dir, gt_dir, N, save_dir, subset, 3, params[0], params[1], height, width)
-	elif deformation == 'tps':
-		elt(image_dir, gt_dir, N, save_dir, subset, 2, params[0], params[1], height, width)
-	elif deformation == 'sim':
-		sim(image_dir, gt_dir, N, save_dir, subset, params[0], params[1], height, width)
-	elif deformation == 'mls':
-		nuclei_results = '../Data/' + sub_dir + '/nuclei_segmentation_results'
-		mls(image_dir, gt_dir, nuclei_results, N, params[0], params[1], save_dir, subset)
-	elif deformation == 'cpab':
+	
+	if deformation == 'cpab':
 		cpab(image_dir, gt_dir, N, save_dir, subset, params[0], params[1])
 	else:
 		print('Deformation not known or implemented yet.')
