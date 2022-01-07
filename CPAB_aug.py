@@ -100,33 +100,3 @@ def cpab(file_dir, mask_dir, essais, save_dir, subset, n, var):
                 os.makedirs('../Data/%s/%s/gts/' % (save_dir, subset))
 
         cpab_transfo(file_names, mask_names, essais, save_dir, subset, n, var)
-	
-def apply_deformation(deformation, sub_dir, subset, N, height, width, params=None, baseline=False):
-
-	save_dir = sub_dir + '/' + deformation
-	image_dir = '../Data/' + sub_dir + '/%s/images' % subset
-	gt_dir    = '../Data/' + sub_dir + '/%s/gts' % subset
-	
-	if deformation == 'cpab':
-		cpab(image_dir, gt_dir, N, save_dir, subset, params[0], params[1])
-	else:
-		print('Deformation not known or implemented yet.')
-
-height = 256
-width  = 256
-essais = 10
-
-param_n = [3, 5, 10, 15]
-
-param_var = [0.5, 1, 2, 5, 10]
-
-sub_dir = 'patches_cropped_20'
-
-
-print("augment cpab")
-for n in param_n:
-        for var in param_var :
-                start = time.time()
-                apply_deformation('cpab', sub_dir, 'train', essais, height, width, [n, var])
-                end = time.time()
-                print("Dataset warping time:", '{:.4f} s'.format(end-start))
