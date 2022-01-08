@@ -23,14 +23,12 @@ import numpy as np
 import time
 from skimage import io, img_as_float, img_as_ubyte, color, filters, exposure, morphology, draw, transform
 from scipy.ndimage.interpolation import map_coordinates
-#from cell_nuclei_segmentation import nuclei_DS
-#import elasticdeform
 from scipy.interpolate import Rbf
 from glob import glob
 
 from scipy.spatial.distance import squareform, pdist
 
-#----- MLS deformation functions -----
+#----- MLS ARAP deformation function -----
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -108,11 +106,11 @@ def mls_rigid_deformation(image, mask, p, q, alpha=1.0):
 	R = map_coordinates(R, indices, order=3, mode='reflect').reshape(height, width)
 	G = map_coordinates(G, indices, order=3, mode='reflect').reshape(height, width)
 	B = map_coordinates(B, indices, order=3, mode='reflect').reshape(height, width)
-	transformed_image1 = np.stack((R, G, B), axis = 2)
+	transformed_image = np.stack((R, G, B), axis = 2)
 	
     transformed_mask = map_coordinates(mask, indices, order=0, mode='reflect').reshape(height, width)
     
-    return transformed_image1, mask
+    return transformed_image, transformed_mask
 	
 
 #----- Image loading and deformation -----
@@ -123,7 +121,7 @@ def fetch_file_names(file_dir):
 
 	return np.array(file_names)
 
-def mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
+def cnb_mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 
 	ext = '_%.3f_%.3f' % (n, sigma)
       
@@ -145,12 +143,7 @@ def mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 		mask_name = mask_names[f]
 		mask_name_noext = os.path.splitext(mask_name)[0].split('/')[-1]
 
-		#print(nuclei_results + '/' + file_name_noext + '.txt')
-		#print(file_name_noext)
-
 		file_name_nuclei_centers = nuclei_results + '/' + file_name_noext + '_nuclei_centers.txt'
-
-		# file_name_nuclei_centers
 	
 		# Load nuclei centers
 		center_array = np.loadtxt(file_name_nuclei_centers, dtype=int)
@@ -162,19 +155,10 @@ def mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
                 
 		input_image = io.imread(file_name)
 		input_image = img_as_float(input_image)
-                
-		pad_size = 0
 		shape = input_image.shape
-                
-		# Pad the edges of the input image with symmetric content
-		input_image = np.pad(input_image, ((pad_size, pad_size), (pad_size, pad_size), (0, 0)), mode="symmetric")
-		center_array += pad_size
-
+		
 		input_mask = io.imread(mask_name, as_gray=True)
 		input_mask = img_as_float(input_mask)
-		
-		# Pad the edges of the input image with symmetric content
-		input_mask = np.pad(input_mask, ((pad_size, pad_size), (pad_size, pad_size)), mode="symmetric")
 		
 		max_dist_img = math.sqrt(input_image.shape[0]*input_image.shape[0] + input_image.shape[1]*input_image.shape[1])
 		# Number of detected cell nuclei centers
@@ -182,35 +166,22 @@ def mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 		
 		for i in range(N):
 			
+			# Computation of displacements based on a multivariate
+			# Normal distribution
 			dist = squareform(pdist(center_array))
 			cov = np.exp(-(dist / max_dist_img))
 			sample = np.random.multivariate_normal(np.zeros(n), cov, size=2) * sigma
 			sample = np.transpose(sample)
 			p = center_array
 			q = p + sample
-			
-			'''
-			displacement = np.random.randn(n*n, 2) * sigma
-			rbfi = Rbf(x, y, displacement, function='thin_plate', mode='N-D')
-			p = center_array
-			q = []
-			for k in range(p.shape[0]):
-				px = (p[k][1] / input_image.shape[1]) * 2 - 1
-				py = (p[k][0] / input_image.shape[0]) * 2 - 1
-				d = rbfi(px, py)
-				q.append(p[k] + d)
-			q = np.array(q)
-			'''
                         
+			# Deformation of image and mask
 			output_image, output_mask = mls_rigid_deformation(input_image, p, q, alpha=2.0)
-			# Remove the padding
-			output_image = output_image[pad_size:shape[0]+pad_size, pad_size:shape[1]+pad_size]
+			
 			output_image = np.clip(output_image, 0, 1)
 			output_image_ubyte = img_as_ubyte(output_image)
 			io.imsave('../Data/'+save_dir+ext+'/'+subset+'/images/'+file_name_noext+'_'+str(i)+'.png', output_image_ubyte)
 			
-			# Remove the padding
-			output_mask = output_mask[pad_size:shape[0]+pad_size, pad_size:shape[1]+pad_size]
 			output_mask = np.clip(output_mask, 0, 1)
 			output_mask[output_mask > 0.0] = 1.0
 			output_mask_ubyte = img_as_ubyte(output_mask)
