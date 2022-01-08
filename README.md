@@ -25,9 +25,21 @@ Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender),
 
 ### Data preparation
 
-1. Provide CPAB_aug.py, CNB_aug.py and prepare_data.py with the adequate parameters (folders, image size, wanted deformations and parameter values, etc.).
-2. Call python3 nuclei_segmentation.py for automatic detection of nuclei centers (mandatory before using CNB_aug.py)
-3. Call python3 CPAB_aug.py or python3 CNB_aug.py or python3 prepare_data.py.
+1. Provide prepare_data.py with the adequate parameters (folders, image size, wanted
+deformations and parameter values, etc.).
+2. In order to use the deformation model based on detected cell nuclei (CNB), you first
+have to run the cell nuclei segmentation method ([source](https://github.com/mahmoodlab/NucleiSegmentation)):
+```
+python3 nuclei_segmentation.py --dataroot <datapath> --name NU_SEG --gpu_ids 0 --display_id 0
+--loadSize 256 --fineSize 256
+```
+
+
+2. Call `python3 nuclei_segmentation.py` for automatic detection of nuclei centers (required
+before using the augmentation based on cell nuclei detection).
+3. Call `python3 prepare_data.py`.
+
+https://github.com/mahmoodlab/NucleiSegmentation#testing
 
 ### Data segmentation
 

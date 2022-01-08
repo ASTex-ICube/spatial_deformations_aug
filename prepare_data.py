@@ -159,6 +159,7 @@ def apply_deformation(deformation, sub_dir, subset, N, height, width, params=Non
 
 # PARAMS
 
+# Image size
 height = 256
 width  = 256
 
@@ -170,7 +171,7 @@ N_val   = 10 # 5, 10, 30, 100, 200
 
 orig_dir = 'patches'
 
-## Original tree of our data :
+# Original tree of our data:
 # Data
 # ├── patches
 # │   ├── test
