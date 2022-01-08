@@ -82,8 +82,6 @@ def my_save_images(output_dir_name, visuals, image_path):
 	image_orig = util.tensor2im(visuals['real_A'])
 	image_seg = util.tensor2im(visuals['fake_B'])
 	
-	im_size = (256, 256)
-	
 	nuclei_seg_name = '%s_nuclei_seg.png' % (name)
 	nuclei_seg_save_path = os.path.join(image_dir, nuclei_seg_name)
 	
@@ -96,6 +94,8 @@ def my_save_images(output_dir_name, visuals, image_path):
 	nuclei_centers_name = '%s_nuclei_centers.txt' % (name)
 	nuclei_centers_save_path = os.path.join(image_dir, nuclei_centers_name)
 	
+	# Target image size: to be adjusted according to user's dataset
+	im_size = (256, 256)
 	draw_nuclei(image_orig, image_seg, im_size, nuclei_on_image_save_path,
 	            nuclei_map_save_path, nuclei_centers_save_path)
 
@@ -112,9 +112,11 @@ def main(sub_dir, subset, baseline=False):
 		os.makedirs(save_dir)
 	
 	opt = TestOptions().parse()
-	opt.name = 'NU_SEG'
+	# Images scaled to this size: to be adjusted according to user's dataset
 	opt.loadSize = 1024
+	# Crop to this size: to be adjusted according to user's dataset
 	opt.fineSize = 1024
+	opt.name = 'NU_SEG'
 	opt.dataroot = image_dir
 	opt.results_dir = save_dir
 	opt.gpu_ids = 0
