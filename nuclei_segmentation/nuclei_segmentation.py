@@ -102,11 +102,11 @@ def my_save_images(output_dir_name, visuals, image_path):
 def main(sub_dir, subset, baseline=False):
 
 	if baseline :
-		save_dir = '../Data/' + sub_dir + '/nuclei_segmentation_results' + '_baseline'
-		image_dir = '../Data/' + sub_dir + '/baseline/%s/images' % subset
+		save_dir = '../../Data/' + sub_dir + '/nuclei_segmentation_results' + '_baseline'
+		image_dir = '../../Data/' + sub_dir + '/baseline/%s/images' % subset
 	else:
-		save_dir = '../Data/' + sub_dir + '/nuclei_segmentation_results'
-		image_dir = '../Data/' + sub_dir + '/%s/images' % subset
+		save_dir = '../../Data/' + sub_dir + '/nuclei_segmentation_results'
+		image_dir = '../../Data/' + sub_dir + '/%s/images' % subset
 			
 	if not os.path.exists(save_dir):
 		os.makedirs(save_dir)
@@ -115,10 +115,9 @@ def main(sub_dir, subset, baseline=False):
 	opt.name = 'NU_SEG'
 	opt.loadSize = 1024
 	opt.fineSize = 1024
-
 	opt.dataroot = image_dir
 	opt.results_dir = save_dir
-
+	opt.gpu_ids = 0
 	opt.nThreads = 1   # test code only supports nThreads = 1
 	opt.batchSize = 1  # test code only supports batchSize = 1
 	opt.serial_batches = True  # no shuffle
