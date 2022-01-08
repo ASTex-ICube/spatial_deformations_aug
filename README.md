@@ -25,8 +25,8 @@ Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender),
 
 ### Data preparation
 
-1. Provide prepare_data.py with the adequate parameters (folders, image size, wanted
-deformations and parameter values, etc.).
+1. Provide prepare_data.py with the adequate parameter values (folders,
+image size, wanted deformations and parameter values, etc.).
 
 2. In order to use the deformation model based on cell nuclei centers (CNB), you
 first have to run a cell nuclei segmentation method. We recommend the method by
