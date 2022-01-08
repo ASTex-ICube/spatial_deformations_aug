@@ -29,13 +29,13 @@ Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender),
 deformations and parameter values, etc.).
 
 2. In order to use the deformation model based on cell nuclei centers (CNB), you
-first have to run the cell nuclei segmentation method. We recommend the method by
+first have to run a cell nuclei segmentation method. We recommend the method by
 [[Mahmood et al., 2019](https://ieeexplore.ieee.org/document/8756037)]. A copy of the
 [authors' code](https://github.com/mahmoodlab/NucleiSegmentation) is available
 in the nuclei_segmentation directory, with some specific processing of the segmentation
 results to get the cell nuclei centers. You have to download the pretrained models
-(see [here](https://github.com/mahmoodlab/NucleiSegmentation#testing)). Then
-adjust parameter values in nuclei_segmentation.py and run
+(see [here](https://github.com/mahmoodlab/NucleiSegmentation#testing)) or train
+your own models. Then adjust parameter values in nuclei_segmentation.py and run
 `python3 nuclei_segmentation.py`.
 
 3. Call `python3 prepare_data.py` to generate the augmented data.
