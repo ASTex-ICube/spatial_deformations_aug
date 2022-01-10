@@ -263,9 +263,6 @@ for n in param_n:
 
 		
 print("augment cnb")
-# Cell nuclei segmentation. Comment if already done.
-import nuclei_segmentation as ns
-ns.main(sub_dir, 'train')
 # Grid Search. Change values according to user's needs.
 param_sigma = [5]#[5, 10, 15, 30, 100]
 for sigma in param_sigma:
