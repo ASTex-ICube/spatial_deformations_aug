@@ -36,7 +36,7 @@ def mls_rigid_deformation(image, mask, p, q, alpha=1.0):
 	''' Rigid deformation
 	### Params:
 		* image - ndarray: original image
-        * mask - ndarray: mask
+		* mask - ndarray: mask
 		* p - ndarray: an array with size [n, 2], original control points
 		* q - ndarray: an array with size [n, 2], final control points
 		* alpha - float: parameter used by weights
@@ -108,9 +108,9 @@ def mls_rigid_deformation(image, mask, p, q, alpha=1.0):
 	B = map_coordinates(B, indices, order=3, mode='reflect').reshape(height, width)
 	transformed_image = np.stack((R, G, B), axis = 2)
 	
-    transformed_mask = map_coordinates(mask, indices, order=0, mode='reflect').reshape(height, width)
-    
-    return transformed_image, transformed_mask
+	transformed_mask = map_coordinates(mask, indices, order=0, mode='reflect').reshape(height, width)
+	
+	return transformed_image, transformed_mask
 	
 
 #----- Image loading and deformation -----
@@ -124,7 +124,7 @@ def fetch_file_names(file_dir):
 def cnb_mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 
 	ext = '_%.3f_%.3f' % (n, sigma)
-      
+	  
 	file_names = fetch_file_names(image_dir)
 	mask_names = fetch_file_names(gt_dir)
 
@@ -150,9 +150,9 @@ def cnb_mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 		center_array = center_array[:, [1, 0]]
 		# Remove duplicates
 		center_array = np.unique(center_array, axis=0)
-                
+				
 		# MLS as-rigid-as-possible deformation
-                
+				
 		input_image = io.imread(file_name)
 		input_image = img_as_float(input_image)
 		shape = input_image.shape
@@ -174,7 +174,7 @@ def cnb_mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
 			sample = np.transpose(sample)
 			p = center_array
 			q = p + sample
-                        
+						
 			# Deformation of image and mask
 			output_image, output_mask = mls_rigid_deformation(input_image, p, q, alpha=2.0)
 			
