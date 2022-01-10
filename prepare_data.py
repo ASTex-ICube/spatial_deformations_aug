@@ -33,7 +33,7 @@ def fetch_file_names(file_dir):
     return np.array(file_names)
           
 
-def prepare_crop(N, subsets, orig_dir, height, width):
+def prepare_patches(N, subsets, orig_dir, height, width):
 
     for i in range(len(subsets)):
 
@@ -192,13 +192,13 @@ orig_dir = 'patches'
 # │       ├── gts
 # │       └── images
 
-print("prepare crop")
-save_dir = prepare_crop([N_train, N_val, N_test], ['train', 'validation', 'test'], orig_dir, height, width)
+print("prepare patches")
+save_dir = prepare_patches([N_train, N_val, N_test], ['train', 'validation', 'test'], orig_dir, height, width)
 #save_dir = 'patches_20'
 
-# prepare_crop can be skipped if save_dir is provided. Comment/Uncomment according to user's needs.
+# prepare_patches can be skipped if save_dir is provided. Comment/Uncomment according to user's needs.
 
-essais = 10 # number of deformations for each patch.
+nb_deform = 10 # number of deformations for each patch.
 
 # Performs all deformation with the parameters given above. Comment/Uncomment according to user's needs.
 
@@ -209,7 +209,7 @@ param_sigma = [20]#[5, 10, 20, 50]
 for n in param_n:
 	for sigma in param_sigma:
 		start = time.time()
-		apply_deformation('gdb3', save_dir, 'train', essais, height, width, [n, sigma])
+		apply_deformation('gdb3', save_dir, 'train', nb_deform, height, width, [n, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
@@ -221,7 +221,7 @@ param_sigma = [20]#[5, 10, 20, 50]
 for n in param_n:
 	for sigma in param_sigma:
 		start = time.time()
-		apply_deformation('gdb2', save_dir, 'train', essais, height, width, [n, sigma])
+		apply_deformation('gdb2', save_dir, 'train', nb_deform, height, width, [n, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
@@ -233,7 +233,7 @@ param_sigma2 = [5]#[5, 10, 20]
 for alpha in param_alpha:
 	for sigma in param_sigma2:
 		start = time.time()
-		apply_deformation('rdf', save_dir, 'train', essais, height, width, [alpha, sigma])
+		apply_deformation('rdf', save_dir, 'train', nb_deform, height, width, [alpha, sigma])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
@@ -245,7 +245,7 @@ param_s = [1]#[1, 2, 4]
 for w in param_w:
 	for s in param_s:
 		start = time.time()
-		apply_deformation('fbm', save_dir, 'train', essais, height, width, [w, s])
+		apply_deformation('fbm', save_dir, 'train', nb_deform, height, width, [w, s])
 		end = time.time()
 		print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
@@ -257,7 +257,7 @@ param_var = [0.5]#[0.5, 1, 2, 5, 10]
 for n in param_n:
         for var in param_var :
                 start = time.time()
-                apply_deformation('cpab', save_dir, 'train', essais, height, width, [n, var])
+                apply_deformation('cpab', save_dir, 'train', nb_deform, height, width, [n, var])
                 end = time.time()
                 print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
@@ -267,7 +267,7 @@ print("augment cnb")
 param_sigma = [5]#[5, 10, 15, 30, 100]
 for sigma in param_sigma:
 	start = time.time()
-	apply_deformation('cnb', save_dir, 'train', essais, height, width, [sigma])
+	apply_deformation('cnb', save_dir, 'train', nb_deform, height, width, [sigma])
 	end = time.time()
 	print("Dataset warping time:", '{:.4f} s'.format(end-start))
 
