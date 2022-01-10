@@ -185,7 +185,6 @@ orig_dir = 'patches'
 # │           ├── glomeruli
 # │           └── negative
 
-
 # The function prepare_patches selects the number of images according to the given
 # parameters in each folder, then performs nb_crops croppings (with nb_crops=5).
 # The resulting tree looks like this:
