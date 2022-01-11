@@ -128,7 +128,7 @@ def apply_deformation(deformation, sub_dir, subset, N, height, width, params=Non
 	elif deformation == 'cnb':
 		import CNB_aug as cnb
 		nuclei_results = '../Data/' + sub_dir + '/nuclei_segmentation_results'
-		cnb.cnb(image_dir, gt_dir, nuclei_results, N, params[0], save_dir, subset)
+		cnb.cnb_mls(image_dir, gt_dir, nuclei_results, N, params[0], save_dir, subset)
 	else:
 		print('Deformation not known or implemented yet.')
 
