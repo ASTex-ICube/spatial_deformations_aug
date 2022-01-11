@@ -121,9 +121,9 @@ def fetch_file_names(file_dir):
 
 	return np.array(file_names)
 
-def cnb_mls(image_dir, gt_dir, nuclei_results, N, n, sigma, save_dir, subset):
+def cnb_mls(image_dir, gt_dir, nuclei_results, N, sigma, save_dir, subset):
 
-	ext = '_%.3f_%.3f' % (n, sigma)
+	ext = '_%.3f' % (sigma)
 	  
 	file_names = fetch_file_names(image_dir)
 	mask_names = fetch_file_names(gt_dir)
