@@ -177,7 +177,7 @@ def cnb_mls(image_dir, gt_dir, nuclei_results, N, sigma, save_dir, subset):
 			q = p + sample
 						
 			# Deformation of image and mask
-			output_image, output_mask = mls_rigid_deformation(input_image, p, q, alpha=2.0)
+			output_image, output_mask = mls_rigid_deformation(input_image, input_mask, p, q, alpha=2.0)
 			
 			output_image = np.clip(output_image, 0, 1)
 			output_image_ubyte = img_as_ubyte(output_image)
