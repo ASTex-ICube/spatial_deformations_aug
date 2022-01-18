@@ -101,12 +101,8 @@ def my_save_images(output_dir_name, visuals, image_path):
 
 def main(sub_dir, subset, baseline=False):
 
-	if baseline :
-		save_dir = '../../Data/' + sub_dir + '/nuclei_segmentation_results' + '_baseline'
-		image_dir = '../../Data/' + sub_dir + '/baseline/%s/images' % subset
-	else:
-		save_dir = '../../Data/' + sub_dir + '/nuclei_segmentation_results'
-		image_dir = '../../Data/' + sub_dir + '/%s/images' % subset
+	save_dir = '../../Data/' + sub_dir + '/nuclei_segmentation_results'
+	image_dir = '../../Data/' + sub_dir + '/%s/images' % subset
 			
 	if not os.path.exists(save_dir):
 		os.makedirs(save_dir)
@@ -142,4 +138,4 @@ def main(sub_dir, subset, baseline=False):
 
 print("Cell nuclei segmentation")
 # Please adjust the name of the directory containing the images
-main('patches_cropped_20', 'train', baseline=False)
+main('patches_20', 'train', baseline=False)
