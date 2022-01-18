@@ -175,6 +175,9 @@ def fit(train_dataset, validation_dataset, batch_size, epochs, verbose, n, sigma
 
 
 def main(args):
+	
+	if not os.path.exists('./plots'):
+		os.makedirs('./plots')
 
 	#------------------ Hyperparameters --------------------#
 
