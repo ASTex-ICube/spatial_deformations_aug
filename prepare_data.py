@@ -189,7 +189,7 @@ orig_dir = 'patches'
 # parameters in each folder, then performs nb_crops croppings (with nb_crops=5).
 # The resulting tree looks like this:
 # Data
-# ├── patches_cropped_N_train
+# ├── patches_N
 # │   ├── test
 # │   │   ├── gts
 # │   │   └── images
