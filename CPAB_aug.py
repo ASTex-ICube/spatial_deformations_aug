@@ -40,7 +40,7 @@ def cpab_transfo(file_names, mask_names, N, save_dir, subset, n, var):
 
         for f in range(len(file_names)):
 
-                print("cpab ", f, "/", len(file_names))
+                print("cpab ", f+1, "/", len(file_names))
 
                 file_name = file_names[f]
                 mask_name = mask_names[f]
