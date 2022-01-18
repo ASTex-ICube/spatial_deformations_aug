@@ -136,7 +136,7 @@ def cnb_mls(image_dir, gt_dir, nuclei_results, N, sigma, save_dir, subset):
 
 	for f in range(len(file_names)):
 
-		print("mls ", f, "/", len(file_names))
+		print("mls ", f+1, "/", len(file_names))
 
 		file_name = file_names[f]
 		file_name_noext = os.path.splitext(file_name)[0].split('/')[-1]
