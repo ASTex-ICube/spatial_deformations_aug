@@ -77,9 +77,8 @@ def augment_pair(image, gt, n, sigma):
 	if tf.random.uniform([], minval=0, maxval=1) > 0.5:
 		image = tf.image.flip_left_right(image)
 		gt    = tf.image.flip_left_right(gt)
-	if tf.random.uniform([], minval=0, maxval=1) > 0.25:
+	if tf.random.uniform([], minval=0, maxval=1) > 0.5:
 		image, gt = elt(image, gt, n, sigma)
-	#print(image.shape[0])
 
 	return image, gt
 
