@@ -240,7 +240,7 @@ def main(args):
 	# Train or test the model
 	if args.test == True:
 		results = test(test_dataset, unet, batch_size, verbose)
-		h.callback(results, args.dataset_name)
+		h.callback(results, args.dataset_name, args.unet_type)
 	else:
 		fit(train_dataset, validation_dataset, batch_size, epochs, verbose, n, sigma, unet, loss_object, optimizer, checkpoint, manager, args.dataset_name)
 
