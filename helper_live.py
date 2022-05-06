@@ -16,11 +16,11 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
 
-def callback(results, dataset_name):
+def callback(results, dataset_name, method):
 	file = open("results_lots_75.txt", "a")
 	file.write("-----------------------------------------------------\n")
 	file.write("\n")
-	file.write(dataset_name + "\n")
+	file.write(dataset_name + " " + method + "\n")
 	string = "[Test Dice score = %f]\n" % results[0]
 	string = string + "[Test Prec = %f] [Test Recall = %f] [Test Spec = %f]\n" % (results[1], results[3], results[4])
 	file.write(string)
