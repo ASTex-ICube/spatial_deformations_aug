@@ -214,7 +214,14 @@ def main(args):
 
 	# Define the model
 	
-	unet = bn.UNet(height, width, input_channels, output_channels)
+	unet_type = args.unet_type
+
+	if unet_type == 'unet':
+		unet = bn.UNet(height, width, input_channels, output_channels)
+	elif unet_type == 'R2unet':
+		unet = bn.R2UNet(height, width, input_channels, output_channels)
+	elif unet_type == 'attunet':
+		unet = bn.AttUNet(height, width, input_channels, output_channels)
 	unet.summary()
 
 	loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
