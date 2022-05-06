@@ -22,6 +22,10 @@ def parse_args():
 			help="Width of the images")
 	parser.add_argument('--dataset_name', '-dn', default='patches_cropped_20', type=str,
 			help="Which dataset to use")
+	
+	parser.add_argument('--unet_type', '-ut', default='unet', type=str,
+			choices=['unet', 'R2unet', 'attunet'],
+			help="Which UNet to use")
 
 
 	parser.add_argument('--learning_rate', '-lr', default=0.000004, type=float, # 0.000002
