@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
 
-def callback(results, dataset_name, method):
-	file = open("results_protocol1.txt", "a")
+def callback(results, dataset_name, file_name, method):
+	file = open(file_name, "a")
 	file.write("-----------------------------------------------------\n")
 	file.write("\n")
 	file.write(dataset_name + " " + method + "\n")
