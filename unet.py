@@ -23,6 +23,40 @@ import helper as h
 
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+# https://stackoverflow.com/questions/61799546/how-to-custom-losses-by-subclass-tf-keras-losses-loss-class-in-tensorflow2-x
+# https://github.com/huanglau/Keras-Weighted-Binary-Cross-Entropy/blob/master/DynCrossEntropy.py
+class WeightedBinaryCrossEntropy(keras.losses.Loss):
+	"""
+	Args:
+		pos_weight: Scalar to affect the positive labels of the loss function.
+		weight: Scalar to affect the entirety of the loss function.
+		from_logits: Whether to compute loss from logits or the probability.
+		reduction: Type of tf.keras.losses.Reduction to apply to loss.
+		name: Name of the loss function.
+	"""
+	def __init__(self, from_logits=False, name='weighted_binary_crossentropy'):
+		super().__init__(name=name)
+		self.from_logits = from_logits
+
+	def weights(self, y_true, y_pred):
+
+		# get the total number of inputs
+		num_pred = tf.keras.backend.sum(tf.keras.backend.cast(y_pred < 0.5, y_true.dtype)) + tf.keras.backend.sum(y_true)   
+		# get weight of values in 'pos' category
+		zero_weight =  tf.keras.backend.sum(y_true)/ num_pred +  tf.keras.backend.epsilon()   
+		# get weight of values in 'false' category
+		one_weight = tf.keras.backend.sum(tf.keras.backend.cast(y_pred < 0.5, y_true.dtype)) / num_pred +  tf.keras.backend.epsilon()
+		# calculate the weight vector
+		weights =  (1.0 - y_true) * zero_weight +  y_true * one_weight
+
+		return weights
+
+	def call(self, y_true, y_pred):
+		ce = tf.losses.binary_crossentropy(y_true, y_pred, from_logits=self.from_logits)[:,None]
+		ce = self.weights(y_true, y_pred)*ce
+		return ce
 
 def crossentropy_loss(gt_image, seg_output, loss_object):
 
@@ -97,6 +131,13 @@ def test(test_dataset, unet, batch_size, verbose, threshold=0.5):
 			recall_d = recall_d + TP + FN
 			spec_n   = spec_n + TN
 			spec_d   = spec_d + TN + FP
+
+			"""
+			save_images = "images"
+			mpimg.imsave("%s/seg_%d.png" % (save_images, (n+1)*i), np.asarray(bw))
+			mpimg.imsave("%s/gt_%d.png" % (save_images, (n+1)*i), np.asarray(gt_image[i,:,:,0]))
+			mpimg.imsave("%s/i_%d.png" % (save_images, (n+1)*i), np.asarray(input_image[i]))
+			"""
 
 		if verbose:				
 			print("Testing [Batch %d / %d], threshold = %f" % (n+1, test_dataset.cardinality().numpy(), threshold))
@@ -213,7 +254,10 @@ def main(args):
 		unet = bn.UResNet50PreTrained(height, width, input_channels, output_channels)
 	unet.summary()
 
-	loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+	if args.loss == 'bce':
+		loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+	elif args.loss == 'wbce':
+		loss_object = WeightedBinaryCrossEntropy(from_logits=True)
 	optimizer = tf.keras.optimizers.Adam(learning_rate, beta)
 
 	checkpoint_directory = "./training_checkpoints/" + args.dataset_name
@@ -229,7 +273,7 @@ def main(args):
 	# Train or test the model
 	if args.test == True:
 		results = test(test_dataset, unet, batch_size, verbose)
-		h.callback(results, args.dataset_name, args.unet_type)
+		h.callback(results, args.dataset_name, args.unet_type, args.file_name)
 	else:
 		fit(train_dataset, validation_dataset, batch_size, epochs, verbose, unet, loss_object, optimizer, checkpoint, manager, args.dataset_name)
 
