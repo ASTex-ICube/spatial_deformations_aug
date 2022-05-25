@@ -222,6 +222,16 @@ def main(args):
 		unet = bn.R2UNet(height, width, input_channels, output_channels)
 	elif unet_type == 'attunet':
 		unet = bn.AttUNet(height, width, input_channels, output_channels)
+	elif unet_type == 'inceptionunet':
+		unet = bn.InceptionUNet(height, width, input_channels, output_channels)
+	elif unet_type == 'unetplusplus':
+		unet = bn.UnetPlusPlus(height, width, input_channels, output_channels)
+	elif unet_type == 'segnet':
+		unet = bn.SegNet(height, width, input_channels, output_channels)
+	elif unet_type == 'segnetpretrained':
+		unet = bn.SegNetPreTrained(height, width, input_channels, output_channels)
+	elif unet_type == 'uresnet50pretrained':
+		unet = bn.UResNet50PreTrained(height, width, input_channels, output_channels)
 	unet.summary()
 
 	loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
