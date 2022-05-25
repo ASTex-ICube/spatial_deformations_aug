@@ -28,6 +28,10 @@ def parse_args():
 			         'unetplusplus', 'segnet', 'segnetpretrained',
 					 'uresnet50pretrained'],
 			help="Which UNet to use")
+	
+	parser.add_argument('--loss', '-l', default='bce', type=str,
+			choices=['bce', 'wbce'],
+			help="Wich loss to use")
 
 
 	parser.add_argument('--learning_rate', '-lr', default=0.000004, type=float, # 0.000002
