@@ -24,7 +24,9 @@ def parse_args():
 			help="Which dataset to use")
 	
 	parser.add_argument('--unet_type', '-ut', default='unet', type=str,
-			choices=['unet', 'R2unet', 'attunet'],
+			choices=['unet', 'R2unet', 'attunet', 'inceptionunet', 
+			         'unetplusplus', 'segnet', 'segnetpretrained',
+					 'uresnet50pretrained'],
 			help="Which UNet to use")
 
 
