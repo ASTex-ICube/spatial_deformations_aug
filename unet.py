@@ -27,7 +27,7 @@ import matplotlib.image as mpimg
 
 # https://stackoverflow.com/questions/61799546/how-to-custom-losses-by-subclass-tf-keras-losses-loss-class-in-tensorflow2-x
 # https://github.com/huanglau/Keras-Weighted-Binary-Cross-Entropy/blob/master/DynCrossEntropy.py
-class WeightedBinaryCrossEntropy(keras.losses.Loss):
+class WeightedBinaryCrossEntropy(tf.keras.losses.Loss):
 	"""
 	Args:
 		pos_weight: Scalar to affect the positive labels of the loss function.
