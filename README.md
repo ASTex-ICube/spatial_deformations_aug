@@ -1,5 +1,8 @@
 # Data augmentation based on random spatial deformations
 
+This is the page of our paper entitled *Data augmentation based on spatial deformations for histopathology:
+An evaluation in the context of glomeruli segmentation* to be published in Computer Methods and Programs in Biomedicine.
+
 Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender), R. [Allègre](https://igg.icube.unistra.fr/index.php/R%C3%A9mi_All%C3%A8gre), C. [Wemmert](https://wemmertc.github.io/webpage/), J.-M. [Dischler](https://dpt-info.di.unistra.fr/~dischler).
 
 ## Deformation models
