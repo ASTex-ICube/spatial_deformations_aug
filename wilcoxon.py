@@ -75,29 +75,94 @@ sim = [sim1005, sim10010, sim10020, sim2005, sim20010, sim20020, sim4005, sim400
 mls = [mls5, mls10, mls15, mls30, mls100]
 
 
+baseline = [93.7519, 93.6364, 93.7253, 93.8514,	93.5929]
+mrst_660 = [93.7039, 93.6331, 93.5588, 93.5895,	93.5943]
+bmrst_660 = [94.3757, 93.9985, 93.9665,	94.0634, 94.0761]
+mrst_3300 = [93.9881, 93.7656, 93.9853, 93.8267, 93.7384]
+bmrst_3300 = [93.8907, 94.1614, 93.7605, 94.1625, 93.9494]
+
+mrst = [baseline, mrst_660, mrst_3300, bmrst_660, bmrst_3300]
+
+ada_gts = [89.5935, 90.9831, 88.5506, 90.543, 90.0646]
+ada_hsv = [82.7533, 79.7046, 82.6025, 78.9069, 80.4118]
+remix_gts = [72.9785, 78.453, 83.0964, 79.0363,	84.3499]
+remix_hsv = [79.4327, 77.6401, 80.1144,	81.0665, 78.8169]
+gatys_gts = [83.9094, 82.4442, 81.0738,	84.7758, 83.7406]
+gatys_hsv = [90.9145, 87.9804, 90.7122,	88.508,	90.3438]
+ms_gts = [40.3262, 47.2731,	43.4556, 70.6843, 32.2677]
+ms_hsv = [83.6764, 84.9212,	85.5769, 85.4953, 84.3131]
+
+spade = [baseline, ada_gts, ada_hsv, remix_gts, remix_hsv, gatys_gts, gatys_hsv, ms_gts, ms_hsv]
+
+ada_gts_b = [94.118, 94.1042, 94.1224, 94.0548,	93.6769]
+ada_hsv_b = [94.1143, 93.9189, 93.5816,	93.8742, 94.0031]
+remix_gts_b = [94.0007,	93.3504, 93.7278, 93.7363, 93.6089]
+remix_hsv_b = [93.7443,	93.9472, 93.752, 93.7751, 93.6519]
+gatys_gts_b = [92.9337,	92.7123, 93.6033, 93.1705, 93.5657]
+gatys_hsv_b = [93.7141,	93.7383, 93.6037, 93.8698, 94.0066]
+ms_gts_b = [93.6158, 93.6448, 93.4774, 93.6112, 93.1782]
+ms_hsv_b = [93.2459, 92.9705, 93.3279, 92.6916, 93.0914]
+
+spade_b = [baseline, ada_gts_b, ada_hsv_b, remix_gts_b, remix_hsv_b, gatys_gts_b, gatys_hsv_b, ms_gts_b, ms_hsv_b]
+
+same_gts = [86.9706, 87.0822, 88.4153, 89.0341,	88.0576]
+same_hsv = [65.5874, 71.8057, 72.6777, 76.6666,	62.6235]
+same_gts_b = [93.9965, 93.7594,	93.9939, 93.5651, 93.7699]
+same_hsv_b = [93.9111, 93.2894,	93.5916, 93.6133, 93.3943]
+same_mix = [94.1406, 94.039, 94.0602, 94.0226, 93.7805]
+
+same = [baseline, same_gts, same_hsv, same_gts_b, same_gts_b, same_mix]
+
+real     = [94.9488, 95.0122, 95.075, 95.0866, 94.9805]
+identite = [95.0167, 94.7575, 94.8367, 94.9861,	94.9754]
+mix      = [94.2742, 93.9884, 94.1825, 94.0525,	93.9401]
+
+limit = [real, ada_gts_b, identite, mix]
+
 results = []
 
-L = mls
+L = limit
 for i in range(len(L)):
 	l = []
 	for j in range(len(L)):
 		U1, p = mannwhitneyu(L[i], L[j], method='exact')
-		l.append(p)
+		l.append(p<0.05)
 	results.append(l)
+print(results)
 
-
+"""
 for l in results:
 	ch = ""
 	for i in l:
 		ch += "& $"+str(round(i,3))+"$ "
 	ch += " \\\ \hline"
-	print(ch)
-
+	#print(ch)
+"""
 
 
 results = []
-L = best
+L = limit
 for i in range(len(L)):
-	U1, p = mannwhitneyu(L[0], L[i], method='exact', alternative='less')
-	results.append(p)
+	U1, p = mannwhitneyu(L[3], L[i], method='exact', alternative='less')
+	results.append(p<0.05)
 #print(results)
+
+results = []
+L = limit
+for i in range(len(L)):
+	U1, p = mannwhitneyu(L[3], L[i], method='exact', alternative='greater')
+	results.append(p<0.05)
+#print(results)
+
+
+results = []
+
+L = spade_b
+for i in range(len(L)):
+	l = []
+	for j in range(len(L)):
+		U1, p = mannwhitneyu(L[i], L[j], method='exact')
+		l.append(p<0.05)
+	results.append(l)
+#for lign in results:
+#	print(lign)

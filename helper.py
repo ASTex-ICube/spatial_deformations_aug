@@ -28,8 +28,15 @@ def callback(results, dataset_name, file_name, method):
 
 def training_curves(train_points, validation_points, dataset_name):
 
+	plt.figure()
+
 	plt.plot(train_points, "r--", label = 'train loss')
-	plt.plot(validation_points, "b--", label = 'test loss')
+	plt.plot(validation_points, "b--", label = 'validation loss')
+
+	plt.xlabel("Epochs")
+	plt.ylabel("Losses")
+	#plt.title("Train and Validation Losses Over Epochs", fontsize=14)
+	plt.legend()
 
 	if len(dataset_name.split('/')) == 1:
 		save_name = dataset_name.split('/')[0]

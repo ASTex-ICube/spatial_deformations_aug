@@ -95,7 +95,7 @@ def validation_step(validation_dataset, epoch, epochs, unet, loss_object, verbos
 
 	return np.mean(validation_loss)
 
-def test(test_dataset, unet, batch_size, verbose, threshold=0.5):
+def test(test_dataset, unet, batch_size, dataset_name, verbose, threshold=0.5):
 
 	dice_n   = 0
 	prec_n   = 0
@@ -140,12 +140,12 @@ def test(test_dataset, unet, batch_size, verbose, threshold=0.5):
 			spec_n   = spec_n + TN
 			spec_d   = spec_d + TN + FP
 
-			"""
+			
 			save_images = "images"
-			mpimg.imsave("%s/seg_%d.png" % (save_images, (n+1)*i), np.asarray(bw))
-			mpimg.imsave("%s/gt_%d.png" % (save_images, (n+1)*i), np.asarray(gt_image[i,:,:,0]))
-			mpimg.imsave("%s/i_%d.png" % (save_images, (n+1)*i), np.asarray(input_image[i]))
-			"""
+			mpimg.imsave("%s/%s/seg_%d.png" % (save_images, dataset_name, (n+1)*i), np.uint8(255*np.asarray(probas)))
+			mpimg.imsave("%s/%s/gt_%d.png" % (save_images, dataset_name, (n+1)*i), np.uint8(255*np.asarray(gt_image[i,:,:,0])))
+			mpimg.imsave("%s/%s/i_%d.png" % (save_images, dataset_name, (n+1)*i), np.asarray(input_image[i]))
+			
 
 		if verbose:				
 			print("Testing [Batch %d / %d], threshold = %f" % (n+1, test_dataset.cardinality().numpy(), threshold))
@@ -199,7 +199,7 @@ def fit(train_dataset, validation_dataset, batch_size, epochs, verbose, n, sigma
 			print("[Validation loss = %f]" % (validation_loss))
 		if validation_loss < min_loss :
 			min_loss = validation_loss
-			save_path = manager.save()					
+			save_path = manager.save(epoch)					
 			print("Saved checkpoint for step {}: {}, time: {}".format(int(checkpoint.step), save_path, datetime.datetime.now()-start_time))
 					
 		loss_tr_callback.append(np.mean(loss_tr))
@@ -211,6 +211,10 @@ def main(args):
 	
 	if not os.path.exists('./plots'):
 		os.makedirs('./plots')
+	if not os.path.exists('./images'):
+		os.makedirs('./images')
+	if not os.path.exists('./images/'+args.dataset_name):
+		os.makedirs('./images/'+args.dataset_name)
 
 	#------------------ Hyperparameters --------------------#
 
@@ -273,7 +277,7 @@ def main(args):
 		loss_object = WeightedBinaryCrossEntropy(from_logits=True)
 	optimizer = tf.keras.optimizers.Adam(learning_rate, beta)
 
-	checkpoint_directory = "./training_checkpoints/" + args.dataset_name
+	checkpoint_directory = "./training_checkpoints/" + args.dataset_name + '_' + args.unet_type
 	checkpoint_prefix = os.path.join(checkpoint_directory, "ckpt")
 
 	checkpoint = tf.train.Checkpoint(step=tf.Variable(0), n=tf.Variable(0), optimizer=optimizer, model=unet)
@@ -285,8 +289,8 @@ def main(args):
 
 	# Train or test the model
 	if args.test == True:
-		results = test(test_dataset, unet, batch_size, verbose)
-		h.callback(results, args.dataset_name, args.unet_type)
+		results = test(test_dataset, unet, batch_size, args.dataset_name, verbose)
+		h.callback(results, args.dataset_name, args.file_name, args.unet_type)
 	else:
 		fit(train_dataset, validation_dataset, batch_size, epochs, verbose, n, sigma, unet, loss_object, optimizer, checkpoint, manager, args.dataset_name)
 

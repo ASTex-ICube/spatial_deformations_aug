@@ -20,12 +20,12 @@ def parse_args():
 			help="Height of the images")
 	parser.add_argument('--img_width', '-iw', default=256, type=int,
 			help="Width of the images")
-	parser.add_argument('--dataset_name', '-dn', default='patches_cropped_20', type=str,
+	parser.add_argument('--dataset_name', '-dn', default='', type=str,
 			help="Which dataset to use")
-	parser.add_argument('--file_name', '-f', default="results.txt", type=str,
+	parser.add_argument('--file_name', '-f', default="results_additionnels_gatys.txt", type=str,
 			help="Which file to save the results in.")
 	
-	parser.add_argument('--unet_type', '-ut', default='unet', type=str,
+	parser.add_argument('--unet_type', '-ut', default='uresnet50pretrained', type=str,
 			choices=['unet', 'R2unet', 'attunet', 'inceptionunet', 
 			         'unetplusplus', 'segnet', 'segnetpretrained',
 					 'uresnet50pretrained'],
@@ -42,7 +42,7 @@ def parse_args():
 			help="Training hyperparameter : beta")
 	parser.add_argument('--batch_size', '-bs', default=8, type=int,
 			help="Training hyperparameter : batch size")
-	parser.add_argument('--epochs', '-e', default=10, type=int,
+	parser.add_argument('--epochs', '-e', default=300, type=int,
 			help="Training hyperparameter : number of epochs")
 
 	parser.add_argument('--resume_training', '-rt', default=False, type=bool,

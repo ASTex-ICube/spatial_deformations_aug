@@ -225,7 +225,7 @@ def main(args):
 	dataset_path = '../Data/' + args.dataset_name
 	train_dataset      = iu.create_dataset(dataset_path, 'train', height, width, input_channels, output_channels, augment=True)
 
-	dataset_path = '../Data/' + args.dataset_name.split('/')[0]
+	dataset_path = '../Data/' #+ args.dataset_name.split('/')[0]
 	validation_dataset = iu.create_dataset(dataset_path, 'validation', height, width, input_channels, output_channels, augment=True)
 	test_dataset       = iu.create_dataset(dataset_path, 'test', height, width, input_channels, output_channels, augment=False)
 
