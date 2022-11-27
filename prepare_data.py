@@ -19,7 +19,6 @@ import random
 
 import PIL
 from PIL import Image
-from skimage import img_as_ubyte
 
 import tensorflow as tf
 import tensorflow_addons as tfa
@@ -204,7 +203,7 @@ orig_dir = 'patches'
 # the patches to be deformed and used for training of the segmentation model.
 
 print("Prepare patches")
-save_dir = prepare_patches([N_train, N_val, N_test], ['train', 'validation', 'test'], 5, orig_dir, height, width)
+save_dir = prepare_patches([N_train, N_val, N_test], 5, ['train', 'validation', 'test'], orig_dir, height, width)
 
 # If prepare_patches is not used, a value for save_dir has to be provided.
 #save_dir = 'patches_20'
@@ -227,7 +226,7 @@ for n in param_n:
 		end = time.time()
 		print("Deformation time for dataset:", '{:.4f} s'.format(end-start))
 
-
+"""
 print("Augment GBD2")
 # Grid Search. Change values according to user's needs.
 param_n = [3]#[3, 5, 10]
@@ -284,4 +283,4 @@ for sigma in param_sigma:
 	apply_deformation('cnb', save_dir, 'train', nb_deform, height, width, [sigma])
 	end = time.time()
 	print("Deformation time for dataset:", '{:.4f} s'.format(end-start))
-
+"""

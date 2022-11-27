@@ -1,7 +1,7 @@
 
 
 
-def gdb(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, width):
+def gbd(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, width):
 
 	ext = '_%.3f_%.3f' % (n, sigma)
 
@@ -70,7 +70,7 @@ def gdb(file_dir, mask_dir, essais, save_dir, subset, order, n, sigma, height, w
 
 				dense_gt_warp = tf.image.convert_image_dtype(dense_gt_warp, dtype=tf.uint8)
 				dense_gt_warp_png = tf.io.encode_png(dense_gt_warp)
-				tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(e)+'.png', dense_gt_warp_png)
+				tf.io.write_file('../Data/'+save_dir+ext+'/'+subset+'/gts/'+file_name_noext+'_'+str(e)+'.png', 255*dense_gt_warp_png)
 
 
 
