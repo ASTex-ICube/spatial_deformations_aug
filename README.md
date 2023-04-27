@@ -1,9 +1,15 @@
 # Data augmentation based on random spatial deformations
 
 This is the page of our paper entitled *Data augmentation based on spatial deformations for histopathology:
-An evaluation in the context of glomeruli segmentation* to be published in Computer Methods and Programs in Biomedicine.
+An evaluation in the context of glomeruli segmentation* published in Computer Methods and Programs in Biomedicine, Volume 221, 106919, 2022, ISSN 0169-2607, https://doi.org/10.1016/j.cmpb.2022.106919.
 
 Authors: F. [Allender](https://igg.icube.unistra.fr/index.php/Florian_Allender), R. [Allègre](https://igg.icube.unistra.fr/index.php/R%C3%A9mi_All%C3%A8gre), C. [Wemmert](https://wemmertc.github.io/webpage/), J.-M. [Dischler](https://dpt-info.di.unistra.fr/~dischler).
+
+A preprint version of the paper is available following [this link](https://seafile.unistra.fr/f/fa3e480dcda54b3392e5/?dl=1).
+
+A complementary work has been presented at the 2022 IEEE-EMBS International Conference on Biomedical and Health Informatics (BHI), in the paper *Conditional image synthesis for improved segmentation of glomeruli in renal histopathological images*, https://doi.org/10.1109/BHI56158.2022.9926880.
+
+A preprint version of the paper is available following [this link](https://seafile.unistra.fr/f/a5b1e797205542f0a905/?dl=1)
 
 ## Deformation models
 
@@ -51,4 +57,31 @@ your own models. Then adjust parameter values in nuclei_segmentation.py and run
 
 ## References
 
-In progress.
+If you find this code useful for your research, consider citing:
+
+```
+@article{allender2022cmpb,
+	title = {Data augmentation based on spatial deformations for histopathology: An evaluation in the context of glomeruli segmentation},
+	journal = {Computer Methods and Programs in Biomedicine},
+	volume = {221},
+	pages = {106919},
+	year = {2022},
+	issn = {0169-2607},
+	doi = {https://doi.org/10.1016/j.cmpb.2022.106919},
+	url = {https://www.sciencedirect.com/science/article/pii/S0169260722003017},
+	author = {Florian Allender and Rémi Allègre and Cédric Wemmert and Jean-Michel Dischler},
+	keywords = {Histopathological images, Glomeruli segmentation, Data augmentation, Random spatial deformations}
+}
+```
+
+```
+@inproceedings{allender2022bhi,
+	author={Allender, Florian and Allégre, Rémi and Wemmert, Cédric and Dischler, Jean-Michel},
+	booktitle={2022 IEEE-EMBS International Conference on Biomedical and Health Informatics (BHI)}, 
+	title={Conditional image synthesis for improved segmentation of glomeruli in renal histopathological images}, 
+	year={2022},
+	volume={},
+	number={},
+	pages={1-5},
+	doi={10.1109/BHI56158.2022.9926880}}
+```
